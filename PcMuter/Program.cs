@@ -1,9 +1,6 @@
 ﻿using PcMuter;
-using System.Threading.Tasks;
 
-HttpClientHelper clientHelper = new HttpClientHelper();
-await clientHelper.GetTimes();
-SetSalahTimers();
+GetSalahTimes(null);
 
 SetDailySalahTimer();
 
@@ -21,8 +18,7 @@ static void SetTimer(string time)
     if (scheduledTime > now)
     {
         TimerCallback timerCallback = new TimerCallback(TimerTick);
-        //Timer timer = new Timer(timerCallback, null, (int)(scheduledTime - now).TotalMilliseconds, Timeout.Infinite);
-        Timer timer = new Timer(timerCallback, null, 2000, Timeout.Infinite);
+        Timer timer = new Timer(timerCallback, null, (scheduledTime - now), Timeout.InfiniteTimeSpan);
         GlobalVars.Timers.Add(timer);
     }
 }
@@ -34,7 +30,7 @@ static void TimerTick(object state)
     AudioControl.Mute();
 
     // Belirli bir süre sonra sesi geri yükle
-    Thread.Sleep(1 * 5 * 1000); // dakika
+    Thread.Sleep(10 * 60 * 1000); // dakika
     AudioControl.Unmute();
 }
 
@@ -48,19 +44,17 @@ static void SetDailySalahTimer()
         scheduledTime = scheduledTime.AddDays(1);
     }
 
-
-    TimerCallback timerCallback = new TimerCallback(state => Task.Factory.StartNew(() => GetSalahTimes(state)));
-
-    Timer timer = new Timer(timerCallback, null, (scheduledTime - DateTime.Now).Milliseconds, (int)(TimeSpan.FromDays(1).TotalMilliseconds));
+    TimerCallback timerCallback = new TimerCallback(GetSalahTimes);
+    Timer timer = new Timer(timerCallback, null, (scheduledTime - DateTime.Now), TimeSpan.FromDays(1));
 
     GlobalVars.Timers.Add(timer);
 }
 
 
-static async Task GetSalahTimes(object state)
+static void GetSalahTimes(object state)
 {
     HttpClientHelper clientHelper = new HttpClientHelper();
-    await clientHelper.GetTimes();
+    clientHelper.GetTimes();
     SetSalahTimers();
 }
 
@@ -68,8 +62,8 @@ static void SetSalahTimers()
 {
     GlobalVars.Timers.Clear();
     SetTimer(GlobalVars.Times.Sunrise);
-    //SetTimer(GlobalVars.Times.Dhuhr);
-    //SetTimer(GlobalVars.Times.Asr);
-    //SetTimer(GlobalVars.Times.Maghrib);
-    //SetTimer(GlobalVars.Times.Isha);
+    SetTimer(GlobalVars.Times.Dhuhr);
+    SetTimer(GlobalVars.Times.Asr);
+    SetTimer(GlobalVars.Times.Maghrib);
+    SetTimer(GlobalVars.Times.Isha);
 }

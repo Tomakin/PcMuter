@@ -19,18 +19,19 @@ namespace PcMuter
             };
         }
 
-        public async Task GetTimes()
+        public void GetTimes()
         {
-            //var responseMessage = await client.GetAsync($"{DateTime.Now.Day}-{DateTime.Now.Month}-{DateTime.Now.Year}?address={address}&method=13");
-            //var resultString = await responseMessage.Content.ReadAsStringAsync();
-            //var result = JsonSerializer.Deserialize<SalahTimes>(resultString);
-            //GlobalVars.Times = result.data.timings;
-            FakeIT();
+            var responseMessage = Task.Run(() => client.GetAsync($"{DateTime.Now.Day}-{DateTime.Now.Month}-{DateTime.Now.Year}?address={address}&method=13"));
+            var resultTask = Task.Run(() => responseMessage.Result.Content.ReadAsStringAsync());
+            var resultString = resultTask.Result;
+            var result = JsonSerializer.Deserialize<SalahTimes>(resultString);
+            GlobalVars.Times = result.data.timings;
+            //FakeIT();
         }
 
-        public async Task FakeIT()
+        public void FakeIT()
         {
-            string time = "18:00";
+            string time = "21:00";
             GlobalVars.Times = new Timings()
             {
                 Asr = time,
