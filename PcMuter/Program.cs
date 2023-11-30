@@ -4,8 +4,20 @@ GetSalahTimes(null);
 
 SetDailySalahTimer();
 
-Console.WriteLine("Uygulama çalışıyor. Çıkış yapmak için bir tuşa basın.");
-Console.ReadKey();
+Console.WriteLine("Console uygulaması çalışıyor. Çıkmak için 'exit' yazın.");
+
+while (true)
+{
+    string input = Console.ReadLine();
+
+    if (input.ToLower() == "exit")
+    {
+        // Kullanıcı 'exit' yazdığında uygulamadan çıkış yapma
+        break;
+    }
+}
+
+Console.WriteLine("Uygulama kapatılıyor.");
 
 static void SetTimer(string time)
 {
