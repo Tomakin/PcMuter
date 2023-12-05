@@ -29,20 +29,25 @@ static void SetTimer(string time)
 
     if (scheduledTime > now)
     {
-        TimerCallback timerCallback = new TimerCallback(TimerTick);
+        TimerCallback timerCallback = new TimerCallback(TimerTickMute);
         Timer timer = new Timer(timerCallback, null, (scheduledTime - now), Timeout.InfiniteTimeSpan);
         GlobalVars.Timers.Add(timer);
     }
 }
 
 
-static void TimerTick(object state)
+static void TimerTickMute(object state)
 {
     // Ses düzeyini sıfıra indir
     AudioControl.Mute();
 
-    // Belirli bir süre sonra sesi geri yükle
-    Thread.Sleep(10 * 60 * 1000); // dakika
+    TimerCallback timerCallback = new TimerCallback(TimerTickUnmute);
+    Timer timer = new Timer(timerCallback, null, TimeSpan.FromMilliseconds(10 * 60 * 1000), Timeout.InfiniteTimeSpan);
+}
+
+static void TimerTickUnmute(object state)
+{
+    // Belirli bir süre sonra sesi aç
     AudioControl.Unmute();
 }
 

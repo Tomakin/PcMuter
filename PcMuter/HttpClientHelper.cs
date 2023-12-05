@@ -31,7 +31,7 @@ namespace PcMuter
 
         public void FakeIT()
         {
-            string time = "21:00";
+            string time = "13:14";
             GlobalVars.Times = new Timings()
             {
                 Asr = time,
