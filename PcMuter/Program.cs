@@ -25,13 +25,19 @@ static void SetTimer(string time)
     DateOnly dateOnly = new DateOnly(now.Year, now.Month, now.Day);
     var times = time.Split(':');
     var timeOnly = new TimeOnly(int.Parse(times[0]), int.Parse(times[1]));
-    DateTime scheduledTime = new DateTime(dateOnly, timeOnly).AddMinutes(-3); // apiden çekilen zamandan 3 dakika önceye ayarla
+    DateTime scheduledTimeforMute = new DateTime(dateOnly, timeOnly).AddMinutes(-3); // apiden çekilen zamandan 3 dakika önceye ayarla
+    DateTime scheduledTimeforUnMute = new DateTime(dateOnly, timeOnly).AddMinutes(7); // apiden çekilen zamandan 7 dakika sonraya ayarla
 
-    if (scheduledTime > now)
+    if (scheduledTimeforMute > now)
     {
-        TimerCallback timerCallback = new TimerCallback(TimerTickMute);
-        Timer timer = new Timer(timerCallback, null, (scheduledTime - now), Timeout.InfiniteTimeSpan);
-        GlobalVars.Timers.Add(timer);
+        TimerCallback timerCallbackMute = new TimerCallback(TimerTickMute);
+        Timer timerMute = new Timer(timerCallbackMute, null, (scheduledTimeforMute - now), Timeout.InfiniteTimeSpan);
+
+        TimerCallback timerCallbackUnMute = new TimerCallback(TimerTickUnmute);
+        Timer timerUnmute = new Timer(timerCallbackUnMute, null, (scheduledTimeforUnMute - now), Timeout.InfiniteTimeSpan);
+
+        GlobalVars.Timers.Add(timerMute);
+        GlobalVars.Timers.Add(timerUnmute);
     }
 }
 
@@ -40,9 +46,6 @@ static void TimerTickMute(object state)
 {
     // Ses düzeyini sıfıra indir
     AudioControl.Mute();
-
-    TimerCallback timerCallback = new TimerCallback(TimerTickUnmute);
-    Timer timer = new Timer(timerCallback, null, TimeSpan.FromMilliseconds(10 * 60 * 1000), Timeout.InfiniteTimeSpan);
 }
 
 static void TimerTickUnmute(object state)
